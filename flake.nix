@@ -8,6 +8,11 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    stylix = {
+      url = "github:nix-community/stylix/release-25.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, ... }@inputs: 
@@ -19,8 +24,9 @@
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; inherit configDir; };
         modules = [
-          ./configuration.nix
           inputs.home-manager.nixosModules.default
+          inputs.stylix.nixosModules.stylix
+          ./configuration.nix
         ];
       };
     };

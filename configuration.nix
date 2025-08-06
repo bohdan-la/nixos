@@ -11,7 +11,7 @@
     ];
 
   # Generation name
-  system.nixos.label = "symlink_dotfiles";
+  system.nixos.label = "stylix_test_done";
 
   # For nixd lsp server
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
@@ -133,7 +133,6 @@
     git
     wget
     picom
-    kitty
     feh
     brightnessctl
     pavucontrol
@@ -141,6 +140,7 @@
     nil
     nixfmt-rfc-style
     logseq
+    kitty
    ];
 
   services.emacs = {
@@ -174,7 +174,28 @@
       bohdan = import ./home.nix;
     };
   };
-  
+
+  # Setting stylix
+  stylix = {
+    enable = false;
+    
+    autoEnable = false;
+
+    image = "${configDir}/wallpapers/solarized_tree.png";
+
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/solarized-dark.yaml";
+
+    fonts = {
+      monospace = {
+        package = pkgs.fira-code;
+        name = "FiraCode Nerd Font Mono";
+      };
+    };
+
+    # targets.kitty.enable = true;
+  };
+
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
