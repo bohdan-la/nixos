@@ -11,7 +11,7 @@
     ];
 
   # Generation name
-  system.nixos.label = "stylix_test_done";
+  system.nixos.label = "deleted_ffmpeg";
 
   # For nixd lsp server
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
@@ -141,10 +141,27 @@
     nixfmt-rfc-style
     logseq
     kitty
-   ];
+    gh
+    cmake
+    gcc
+    gnumake
+    libtool
+    autoconf
+    pkg-config
+    emacs
+    (python312.withPackages (ps: with ps; [
+      epc
+      sexpdata
+      six
+      inflect
+      pyqt6
+      pyqt6-sip
+      xlib
+    ]))
+  ];
 
   services.emacs = {
-    enable = true;
+    enable = false;
     package = pkgs.emacs;
   };
     

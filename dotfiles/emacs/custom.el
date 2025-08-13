@@ -66,6 +66,8 @@
 ;; Windows history
 (winner-mode)
 
+(setq password-cache-expiry 300)
+
 ;; Toggle function: show if hidden, hide if visible
 (defun my/toggle-eshell-split ()
   "Toggle the visibility of the *eshell-split* buffer."
@@ -85,7 +87,38 @@
 ;; Keybinding: C-c e toggles the split eshell
 (global-set-key (kbd "C-c e") #'my/toggle-eshell-split)
 
-(setq password-cache-expiry 300)
+;; handy function for remote session
+(defun remote-combo-session (user host)
+  "Open new tab with TRAMP Dired and vterm, rename vterm buffer."
+  (interactive "sUser: \nsHost: ")
+  (let ((remote-path (format "/ssh:%s@%s:~/" user host))
+        dired-buf
+        vterm-buf
+        tab-name)
+    (setq tab-name (format "remote-%s@%s" user host))
+    ;; Створити dired буфер
+    (setq dired-buf (dired-noselect remote-path))
+    (with-current-buffer dired-buf
+      (rename-buffer (format "[remote] Dired %s@%s" user host)))
+    ;; Відкрити нову вкладку
+    (tab-bar-new-tab)
+    (tab-bar-rename-tab tab-name)
+    (delete-other-windows)
+    (split-window-right)
+    ;; Ліве вікно — dired
+    (set-window-buffer (selected-window) dired-buf)
+    ;; Праве вікно — vterm з default-directory
+    (other-window 1)
+    (let ((default-directory remote-path))
+      (vterm)
+      ;; Переіменовуємо buffer після створення
+      (setq vterm-buf (current-buffer))
+      (with-current-buffer vterm-buf
+        (rename-buffer (format "[remote] vterm %s@%s" user host))))
+    ;; Повернути фокус на dired
+    (other-window -1)))
+
+
 
 ;; Package system
 (require 'package)
@@ -126,17 +159,10 @@
 ;; Dashboard
 ;; use-package with package.el:
 (use-package dashboard
+  :disabled t
   :ensure t
   :config
   (dashboard-setup-startup-hook))
-
-;; company-mode
-(use-package company
-  :ensure t
-  :hook (prog-mode . company-mode)
-  :config
-  (setq company-minimum-prefix-length 1
-        company-idle-delay 0.0)) ;; show completions immediately
 
 ;; LSP setup
 (use-package lsp-mode
@@ -166,6 +192,7 @@
 
 ;; company-mode
 (use-package company
+  :disabled t
   :ensure t
   :hook (prog-mode . company-mode)
   :config
@@ -193,4 +220,58 @@
   :config
   (exec-path-from-shell-initialize))
 
+(use-package magit
+  :ensure t)
+
+(use-package vterm
+  :ensure t)
+
+(use-package gptel
+  :ensure t
+  :config
+  (gptel-make-gh-copilot "Copilot")
+  (setq gptel-default-mode 'text-mode)
+  (setq gptel-model 'gpt-4.1
+        gptel-backend (gptel-make-gh-copilot "Copilot")))
+
 ;; To consider in future: consult, marginalia
+
+;; holo-layer for cursor animations
+(add-to-list 'load-path (concat user-emacs-directory "holo-layer/"))
+(require 'holo-layer)
+;; (holo-layer-enable)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (when (display-graphic-p)
+              (require 'holo-layer)
+              (holo-layer-enable))))
+(setq holo-layer-enable-cursor-animation t)
+(setq holo-layer-cursor-alpha 100)
+(setq holo-layer-cursor-animation-color-gradient-start-value 100)
+(setq holo-layer-cursor-animation-interval 10)
+
+(setq holo-layer-enable-type-animation t)
+(setq holo-layer-type-animation-style "firefly")
+
+(with-eval-after-load 'holo-layer
+  ;; Block animation for certain commands
+  (setq holo-layer-cursor-block-commands
+        '(
+          ;; Movement
+          ;; "next-line" "previous-line"
+          "forward-char" "backward-char"
+          "right-char" "left-char"
+          ;; "forward-word" "backward-word"
+          ;; "beginning-of-line" "end-of-line"
+
+          ;; Typing
+          "self-insert-command"
+          
+          ;; Deleting
+          "delete-backward-char" "delete-forward-char"
+          "backward-delete-char-untabify"
+          
+          ;; Company-mode navigation
+          "company-select-next" "company-select-previous"
+          "company-complete-selection"
+          "company-abort")))
