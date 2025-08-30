@@ -72,6 +72,9 @@ in {
       ll = "ls -alF";
       sysbuild = "sudo nixos-rebuild switch";
     };
+    sessionVariables = {
+      GEMINI_API_KEY = "AIzaSyAfHo9UJimCcg-APdMpGB17dcHscpEIg_E";
+    };
   };
 
   # programs.kitty.enable = true;

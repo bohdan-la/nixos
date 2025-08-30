@@ -11,7 +11,7 @@
     ];
 
   # Generation name
-  system.nixos.label = "deleted_ffmpeg";
+  system.nixos.label = "discord_btop";
 
   # For nixd lsp server
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
@@ -158,6 +158,12 @@
       pyqt6-sip
       xlib
     ]))
+    freecad
+    unzip
+    inputs.zen-browser.packages."${system}".default
+    aider-chat
+    discord
+    btop
   ];
 
   services.emacs = {

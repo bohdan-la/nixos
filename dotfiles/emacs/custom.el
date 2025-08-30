@@ -275,3 +275,9 @@
           "company-select-next" "company-select-previous"
           "company-complete-selection"
           "company-abort")))
+
+;; Tried eca-emacs - too young project
+;; (use-package eca
+;;   :ensure t
+;;   :config
+;;   (setq eca-custom-command nil))
